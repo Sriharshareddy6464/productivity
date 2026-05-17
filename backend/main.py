@@ -6,6 +6,7 @@ from app.api.goals import router as goals_router
 from app.api.milestones import router as milestones_router
 from app.api.tasks import router as tasks_router
 from app.api.todos import router as todos_router
+from app.api.groups import router as groups_router
 
 app = FastAPI(title="Productivity Platform API", version="0.1.0")
 
@@ -22,6 +23,7 @@ app.include_router(goals_router)
 app.include_router(milestones_router)
 app.include_router(tasks_router)
 app.include_router(todos_router)
+app.include_router(groups_router)
 
 
 @app.get("/healthz")
