@@ -6,12 +6,14 @@ import { useStore } from "@/store";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 
 export default function GoalsColumn() {
   const { activeGoalId, selectGoal } = useStore();
   const [title, setTitle] = useState("");
   const [adding, setAdding] = useState(false);
+  const listRef = useRef<HTMLDivElement>(null);
 
   const { data: goals, isLoading } = useQuery({
     queryKey: ["goals"],
@@ -56,21 +58,30 @@ export default function GoalsColumn() {
           </div>
         </div>
       )}
-      <div className="flex flex-col gap-2">
-        {goals?.map((goal: any) => (
-          <Card
-            key={goal.id}
-            className={`cursor-pointer p-3 transition-colors hover:bg-slate-50 ${
-              activeGoalId === goal.id ? "ring-2 ring-slate-900" : ""
-            }`}
-            onClick={() => selectGoal(goal.id)}
-          >
-            <p className="text-sm font-medium">{goal.title}</p>
-            {goal.description && (
-              <p className="mt-1 text-xs text-slate-500 line-clamp-2">{goal.description}</p>
-            )}
-          </Card>
-        ))}
+      <div ref={listRef} className="flex flex-col gap-2">
+        <AnimatePresence>
+          {goals?.map((goal: any, i: number) => (
+            <motion.div
+              key={goal.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ delay: i * 0.03, duration: 0.2 }}
+            >
+              <Card
+                className={`cursor-pointer p-3 transition-all hover:-translate-y-0.5 hover:shadow-md ${
+                  activeGoalId === goal.id ? "ring-2 ring-slate-900" : ""
+                }`}
+                onClick={() => selectGoal(goal.id)}
+              >
+                <p className="text-sm font-medium">{goal.title}</p>
+                {goal.description && (
+                  <p className="mt-1 text-xs text-slate-500 line-clamp-2">{goal.description}</p>
+                )}
+              </Card>
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
     </div>
   );

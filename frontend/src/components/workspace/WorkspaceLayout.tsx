@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import gsap from "gsap";
 import GoalsColumn from "./GoalsColumn";
 import MilestonesColumn from "./MilestonesColumn";
 import TasksColumn from "./TasksColumn";
@@ -17,6 +18,17 @@ const columns = [
 export default function WorkspaceLayout() {
   const [mobileIndex, setMobileIndex] = useState(0);
   const CurrentCol = columns[mobileIndex].Component;
+  const desktopRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (desktopRef.current) {
+      gsap.fromTo(
+        desktopRef.current.children,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, stagger: 0.1, duration: 0.4, ease: "power2.out" }
+      );
+    }
+  }, []);
 
   return (
     <>
@@ -65,7 +77,7 @@ export default function WorkspaceLayout() {
       </div>
 
       {/* Desktop: 4 columns */}
-      <div className="hidden h-full w-full xl:flex divide-x divide-slate-200">
+      <div ref={desktopRef} className="hidden h-full w-full xl:flex divide-x divide-slate-200">
         {columns.map(({ key, Component }) => (
           <div key={key} className="flex-1 min-w-0 overflow-y-auto">
             <Component />
