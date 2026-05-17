@@ -1,0 +1,25 @@
+{
+  "title": "Productivity Platform",
+  "panels": [
+    {
+      "title": "Request Latency",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "rate(http_request_duration_seconds_sum[5m]) / rate(http_request_duration_seconds_count[5m])",
+          "legendFormat": "avg latency"
+        }
+      ]
+    },
+    {
+      "title": "Error Rate",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "rate(http_requests_total{status=~\"5..\"}[5m])",
+          "legendFormat": "5xx errors"
+        }
+      ]
+    }
+  ]
+}
