@@ -1,0 +1,32 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Frontend Docker Image
+        run: docker build -t productivity-frontend:latest -f Dockerfile.frontend .
+
+      - name: Build Backend Docker Image
+        run: docker build -t productivity-backend:latest -f Dockerfile.backend .
+
+      # TODO: Push images to container registry (ECR)
+      # - name: Push to ECR
+      #   run: |
+      #     aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
+      #     docker tag productivity-frontend:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/productivity-frontend:latest
+      #     docker tag productivity-backend:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/productivity-backend:latest
+      #     docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/productivity-frontend:latest
+      #     docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/productivity-backend:latest
+
+      # TODO: Apply Kubernetes manifests
+      # - name: Deploy to EKS
+      #   run: |
+      #     aws eks update-kubeconfig --region us-east-1 --name productivity-cluster
+      #     kubectl apply -f k8s/ -n productivity
