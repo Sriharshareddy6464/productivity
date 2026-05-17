@@ -12,7 +12,19 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (!token && pathname.startsWith("/app")) {
+  if (!token && pathname === "/") {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  if (!token && pathname.startsWith("/groups")) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  if (!token && pathname.startsWith("/teams")) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  if (!token && pathname.startsWith("/settings")) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
