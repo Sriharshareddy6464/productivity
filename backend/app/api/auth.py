@@ -1,6 +1,8 @@
 import uuid
 from datetime import datetime
 
+from pydantic import BaseModel
+
 from fastapi import APIRouter, Depends, HTTPException, Request
 from google.auth.transport import requests as google_requests
 from google.oauth2 import id_token
@@ -82,6 +84,29 @@ async def google_callback(code: str, session: AsyncSession = Depends(get_session
 
     access_token = create_access_token(data={"sub": user.id, "email": user.email})
     return {"access_token": access_token, "token_type": "bearer", "user": {"id": user.id, "email": user.email, "display_name": user.display_name, "avatar_url": user.avatar_url}}
+
+
+class ContactsPermissionRequest(BaseModel):
+    granted: bool
+
+
+@router.post("/contacts-permission")
+async def contacts_permission(
+    body: ContactsPermissionRequest,
+    session: AsyncSession = Depends(get_session),
+    current_user: User = Depends(get_current_user),
+):
+    if current_user.contacts_permission_granted:
+        raise HTTPException(status_code=400, detail="Permission already granted")
+
+    if body.granted:
+        current_user.contacts_permission_granted = True
+        await session.commit()
+    else:
+        current_user.contacts_permission_granted = False
+        await session.commit()
+
+    return {"contacts_permission_granted": current_user.contacts_permission_granted}
 
 
 @router.get("/me")
